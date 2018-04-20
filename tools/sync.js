@@ -18,27 +18,22 @@ var Transaction     = mongoose.model( 'Transaction' );
 /**
   //Just listen for latest blocks and sync from the start of the app.
 **/
-var listenBlocks = function(config) {
-    var options = {
-      logIndex: "Number",
-      fromBlock: "latest",
-    };
     var newBlocks = web3.eth.filter("latest");
-    newBlocks.watch(function (error, blockHashOrNumber) {
+    newBlocks.watch(function (error,blockHashOrNumber) {
     if(error) {
         console.log('Error: ' + error);
     } else if (blockHashOrNumber == null) {
         console.log('Warning: null block hash');
     } else {
       console.log('Found new block: ' + blockHashOrNumber);
-      updatedEndBlock(config,blockHashOrNumber);
       if(web3.isConnected()) {
-        web3.eth.getBlock(blockHashOrNumber, true, function(error, blockData) {
+        web3.eth.getBlock(blockHashOrNumber, true, function(error,blockData) {
           if(error) {
             console.log('Warning: error on getting block with hash/number: ' +   blockHashOrNumber + ': ' + error);
           }else if(blockData == null) {
             console.log('Warning: null block data received from the block with hash/number: ' + blockHashOrNumber);
           }else{
+            updatedEndBlock(config,blockData.number);
             writeBlockToDB(config, blockData);
             writeTransactionsToDB(config, blockData);
             return;
