@@ -53,7 +53,7 @@ var listenBlocks = function(config) {
 **/
 var syncChain = function(config,syncConfig,web3,blockHashOrNumber) {
   if(blockHashOrNumber == undefined) {
-    blockHashOrNumber = config.endBlock
+    blockHashOrNumber = syncConfig.endBlock
   }
   if(web3.isConnected()) {
     web3.eth.getBlock(blockHashOrNumber, true, function(error, blockData) {
