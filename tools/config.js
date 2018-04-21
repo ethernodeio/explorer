@@ -1,3 +1,4 @@
+var fs = require('fs');
 /**
   Start config for node connection and sync
 **/
