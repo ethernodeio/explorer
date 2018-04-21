@@ -54,6 +54,7 @@ var listenBlocks = function(config) {
   If full sync is checked this function will start syncing the block chain from lastSynced param see README
 **/
 var syncChain = function(config,syncConfig,web3,blockHashOrNumber) {
+  var web3 = new Web3(new Web3.providers.HttpProvider('http://' + config.nodeAddr + ':' + config.gethPort.toString()));
   if(blockHashOrNumber == undefined) {
     blockHashOrNumber = syncConfig.endBlock
   }
@@ -191,7 +192,6 @@ var patchBlocks = function(config, web3){
 }
 // Starts full sync when set to true in config
 if (config.syncAll === true){
-  var web3 = new Web3(new Web3.providers.HttpProvider('http://' + config.nodeAddr + ':' + config.gethPort.toString()));
   syncChain(config,syncConfig,web3);
 }
 //Start listen for new blocks
