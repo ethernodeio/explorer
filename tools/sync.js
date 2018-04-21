@@ -36,7 +36,7 @@ var listenBlocks = function(config) {
           }else if(blockData == null) {
             console.log('Warning: null block data received from the block with hash/number: ' + blockHashOrNumber);
           }else{
-            updatedEndBlock(config,blockData.number);
+            updatedEndBlock(config,syncConfig,blockData.number);
             writeBlockToDB(config, blockData);
             writeTransactionsToDB(config, blockData);
           }
@@ -51,7 +51,7 @@ var listenBlocks = function(config) {
 /**
   If full sync is checked this function will start syncing the block chain from lastSynced param see README
 **/
-var syncChain = function(config, web3, blockHashOrNumber) {
+var syncChain = function(config,syncConfig,web3,blockHashOrNumber) {
   if(blockHashOrNumber == undefined) {
     blockHashOrNumber = config.endBlock
   }
@@ -60,23 +60,23 @@ var syncChain = function(config, web3, blockHashOrNumber) {
       if(error) {
         console.log('Warning: error on getting block with hash/number: ' +   blockHashOrNumber + ': ' + error);
         //
-        syncChain(config, web3, blockHashOrNumber);
+        syncChain(config,syncConfig,web3,blockHashOrNumber);
       }else if(blockData == null) {
         console.log('Warning: null block data received from the block with hash/number: ' + blockHashOrNumber + ' Retrying in 5 seconds');
 
        }else{
-        if(config.lastSynced === 0){
+        if(syncConfig.lastSynced === 0){
           console.log('No last full sync record found, start from block: latest');
           writeBlockToDB(config, blockData);
           writeTransactionsToDB(config, blockData);
           var lastSync = blockData.number;
-          updateLastSynced(config, lastSync);
+          updateLastSynced(config,syncConfig,lastSync);
         }else{
           console.log('Found last full sync record: ' + config.lastSynced);
           writeBlockToDB(config, blockData);
           writeTransactionsToDB(config, blockData);
           var lastSync = config.lastSynced - 1;
-          updateLastSynced(config, lastSync);
+          updateLastSynced(config,syncConfig,lastSync);
         }
       }
     });
@@ -143,13 +143,13 @@ var checkBlockDBExistsThenWrite = function(config, blockData) {
       }
   });
 };
-var updatedEndBlock = function(config,lastBlock){
-  var configFile = '../conf.json';
-  var file = require(configFile);
+var updatedEndBlock = function(config,syncConfig,lastBlock){
+  var syncFile = '../sync.json';
+  var file = require(syncFile);
 
   file.endBlock = lastBlock;
 
-  fs.writeFile('conf.json', JSON.stringify(file, null, 2), function (err) {
+  fs.writeFile('sync.json', JSON.stringify(file, null, 2), function (err) {
     if (err) return console.log(err);
     //console.log('Wirting new Synced Block ' + lastBlock + ' to ' + configFile);
   });
@@ -157,25 +157,28 @@ var updatedEndBlock = function(config,lastBlock){
 /**
   Take the last block the grabber exited on and update the param 'end' in the config.JSON
 **/
-var updateLastSynced = function(config,lastSync){
+var updateLastSynced = function(config,syncConfig,lastSync){
+  var syncFile = '../sync.json';
+  var file = require(syncFile);
+
   var configFile = '../conf.json';
-  var file = require(configFile);
+  var file2 = require(configFile);
 
   file.lastSynced = lastSync;
-  config.lastSynced = lastSync;
+  syncConfig.lastSynced = lastSync;
 
-  fs.writeFile('conf.json', JSON.stringify(file, null, 2), function (err) {
+  fs.writeFile('sync.json', JSON.stringify(file, null, 2), function (err) {
     if (err) return console.log(err);
     //console.log('writing block ' + lastSync + ' to ' + configFile);
 
-    if (config.lastSynced === config.startBlock){
+    if (syncConfig.lastSynced === syncConfig.startBlock){
       config.syncAll = false;
-      file.syncAll  = false;
-      fs.writeFile('conf.json', JSON.stringify(file, null, 2), function (err) {
+      file2.syncAll  = false;
+      fs.writeFile('conf.json', JSON.stringify(file2, null, 2), function (err) {
         if (err) return console.log(err);
       });
     }else{
-      syncChain(config, web3, config.lastSynced);
+      syncChain(config, web3, syncConfig.lastSynced);
     }
   });
 }
@@ -186,7 +189,7 @@ var patchBlocks = function(config, web3){
 }
 // Starts full sync when set to true in config
 if (config.syncAll === true){
-  syncChain(config,web3);
+  syncChain(config,syncConfig,web3);
 }
 //Start listen for new blocks
 listenBlocks(config);
