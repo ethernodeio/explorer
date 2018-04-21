@@ -4,13 +4,14 @@ Version: .0.0.1
 This file will start syncing the blockchain from the node address you provide in the conf.json file.
 Please read the README in the root directory that explains the parameters of this code
 */
-require('./config.js');
 require( '../db.js' );
 var etherUnits = require("../lib/etherUnits.js");
 var BigNumber = require('bignumber.js');
 
+
 var fs = require('fs');
 var Web3 = require('web3');
+require('./config.js');
 
 var mongoose        = require( 'mongoose' );
 var Block           = mongoose.model( 'Block' );
