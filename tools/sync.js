@@ -59,12 +59,12 @@ var syncChain = function(config,web3,blockHashOrNumber) {
       }else if(blockData == null) {
         console.log('Warning: null block data received from the block with hash/number: ' + blockHashOrNumber);
        }else{
-        if(config.lastSynced === 0){
+        if(blockHashOrNumber === 0){
           console.log('No last full sync record found, start from block: latest');
           //writeBlockToDB(config, blockData);
           //writeTransactionsToDB(config, blockData);
         }else{
-          console.log('Found last full sync record: ' + config.lastSynced);
+          console.log('Found last full sync record: ' + blockHashOrNumber);
           //writeBlockToDB(config, blockData);
           //writeTransactionsToDB(config, blockData);
         }
@@ -134,7 +134,7 @@ var checkBlockDBExistsThenWrite = function(config, blockData) {
   });
 };
 var getLastBlockDB = function() {
-  var blockFind = Block.find({}, "number").lean(true).sort('+number').limit(1);
+  var blockFind = Block.find({}, "number").lean(true).sort('-number').limit(1);
   blockFind.exec(function (err, docs) {
     var nextBlock = docs[0].number;
     syncChain(config,web3,nextBlock);
