@@ -133,7 +133,7 @@ var checkBlockDBExistsThenWrite = function(config, blockData) {
 var getOldesBlockDB = function() {
   var blockFind = Block.find({}, "number").lean(true).sort('number').limit(1);
   blockFind.exec(function (err, docs) {
-    if(docs.lenght = 0){
+    if(docs.length < 1){
       console.log('nothing here');
     }else{
       console.log('last record found in DB: ' + docs[0].number);
