@@ -10,8 +10,9 @@ var BigNumber = require('bignumber.js');
 
 var fs = require('fs');
 var Web3 = require('web3');
+// Sets address for RPC WEb3 to connect to, usually your node address defaults ot localhost
+var web3 = new Web3(new Web3.providers.HttpProvider('http://' + config.nodeAddr + ':' + config.gethPort.toString()));
 eval(fs.readFileSync('tools/config.js')+'');
-
 
 var mongoose        = require( 'mongoose' );
 var Block           = mongoose.model( 'Block' );
