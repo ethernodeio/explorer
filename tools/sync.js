@@ -50,6 +50,9 @@ var listenBlocks = function(config) {
   If full sync is checked this function will start syncing the block chain from lastSynced param see README
 **/
 var syncChain = function(config,web3,blockHashOrNumber) {
+  if(blockHashOrNumber == undefined) {
+    getLastBlockDB();
+  }
   if(web3.isConnected()) {
     web3.eth.getBlock(blockHashOrNumber, true, function(error, blockData) {
       if(error) {
@@ -57,12 +60,12 @@ var syncChain = function(config,web3,blockHashOrNumber) {
       }else if(blockData == null) {
         console.log('Warning: null block data received from the block with hash/number: ' + blockHashOrNumber);
        }else{
-        if(blockHashOrNumber === 0){
+        if(config.lastSynced === 0){
           console.log('No last full sync record found, start from block: latest');
           //writeBlockToDB(config, blockData);
           //writeTransactionsToDB(config, blockData);
         }else{
-          console.log('Found last full sync record: ' + blockHashOrNumber);
+          console.log('Found last full sync record: ' + config.lastSynced);
           //writeBlockToDB(config, blockData);
           //writeTransactionsToDB(config, blockData);
         }
@@ -131,7 +134,7 @@ var checkBlockDBExistsThenWrite = function(config, blockData) {
       }
   });
 };
-var getLastBlockDB = function(res) {
+var getLastBlockDB = function() {
   var blockFind = Block.find({}, "number").lean(true).sort('-number').limit(1);
   blockFind.exec(function (err, docs) {
     var nextBlock = docs[0].number;
