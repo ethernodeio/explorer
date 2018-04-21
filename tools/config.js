@@ -25,10 +25,6 @@ try {
     console.log('CONFIG FOUND: Node:'+config.nodeAddr+' | Port:'+config.gethPort);
     // Sets address for RPC WEb3 to connect to, usually your node address defaults ot localhost
     var web3 = new Web3(new Web3.providers.HttpProvider('http://' + config.nodeAddr + ':' + config.gethPort.toString()));
-    // Starts full sync when set to true in config
-    if (config.syncAll === true){
-      syncChain(config,web3);
-    }
 }
 catch (error) {
     if (error.code === 'ENOENT') {

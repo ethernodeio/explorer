@@ -184,5 +184,9 @@ var patchBlocks = function(config, web3){
 
   }
 }
-
+// Starts full sync when set to true in config
+if (config.syncAll === true){
+  syncChain(config,web3);
+}
+//Start listen for new blocks
 listenBlocks(config);
