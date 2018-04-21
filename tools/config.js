@@ -41,4 +41,4 @@ catch (error) {
     }
 }
 
-listenBlocks(config);
+exports.config = config;
