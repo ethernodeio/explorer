@@ -10,10 +10,6 @@ var BigNumber = require('bignumber.js');
 
 var fs = require('fs');
 var Web3 = require('web3');
-//call in config.js
-eval(fs.readFileSync('tools/config.js')+'');
-// Sets address for RPC WEb3 to connect to, usually your node address defaults ot localhost
-var web3 = new Web3(new Web3.providers.HttpProvider('http://' + config.nodeAddr + ':' + config.gethPort.toString()));
 
 var mongoose        = require( 'mongoose' );
 var Block           = mongoose.model( 'Block' );
@@ -38,7 +34,7 @@ var listenBlocks = function(config) {
           }else if(blockData == null) {
             console.log('Warning: null block data received from the block with hash/number: ' + blockHashOrNumber);
           }else{
-            updatedEndBlock(config,syncConfig,blockData.number);
+            updatedEndBlock(config,blockData.number);
             writeBlockToDB(config, blockData);
             writeTransactionsToDB(config, blockData);
           }
@@ -53,33 +49,29 @@ var listenBlocks = function(config) {
 /**
   If full sync is checked this function will start syncing the block chain from lastSynced param see README
 **/
-var syncChain = function(config,syncConfig,web3,blockHashOrNumber) {
-  var web3 = new Web3(new Web3.providers.HttpProvider('http://' + config.nodeAddr + ':' + config.gethPort.toString()));
+var syncChain = function(config, web3, blockHashOrNumber) {
   if(blockHashOrNumber == undefined) {
-    blockHashOrNumber = syncConfig.endBlock
+    blockHashOrNumber = config.endBlock
   }
   if(web3.isConnected()) {
     web3.eth.getBlock(blockHashOrNumber, true, function(error, blockData) {
       if(error) {
         console.log('Warning: error on getting block with hash/number: ' +   blockHashOrNumber + ': ' + error);
-        //
-        syncChain(config,syncConfig,web3,blockHashOrNumber);
       }else if(blockData == null) {
-        console.log('Warning: null block data received from the block with hash/number: ' + blockHashOrNumber + ' Retrying in 5 seconds');
-
+        console.log('Warning: null block data received from the block with hash/number: ' + blockHashOrNumber);
        }else{
-        if(syncConfig.lastSynced === 0){
+        if(config.lastSynced === 0){
           console.log('No last full sync record found, start from block: latest');
           writeBlockToDB(config, blockData);
           writeTransactionsToDB(config, blockData);
           var lastSync = blockData.number;
-          updateLastSynced(config,syncConfig,lastSync);
+          updateLastSynced(config, lastSync);
         }else{
-          console.log('Found last full sync record: ' + syncConfig.lastSynced);
+          console.log('Found last full sync record: ' + config.lastSynced);
           writeBlockToDB(config, blockData);
           writeTransactionsToDB(config, blockData);
-          var lastSync = syncConfig.lastSynced - 1;
-          updateLastSynced(config,syncConfig,lastSync);
+          var lastSync = config.lastSynced - 1;
+          updateLastSynced(config, lastSync);
         }
       }
     });
@@ -146,13 +138,13 @@ var checkBlockDBExistsThenWrite = function(config, blockData) {
       }
   });
 };
-var updatedEndBlock = function(config,syncConfig,lastBlock){
-  var syncFile = './sync.json';
-  var file = require(syncFile);
+var updatedEndBlock = function(config,lastBlock){
+  var configFile = '../conf.json';
+  var file = require(configFile);
 
   file.endBlock = lastBlock;
 
-  fs.writeFile('sync.json', JSON.stringify(file, null, 2), function (err) {
+  fs.writeFile('conf.json', JSON.stringify(file, null, 2), function (err) {
     if (err) return console.log(err);
     //console.log('Wirting new Synced Block ' + lastBlock + ' to ' + configFile);
   });
@@ -160,39 +152,42 @@ var updatedEndBlock = function(config,syncConfig,lastBlock){
 /**
   Take the last block the grabber exited on and update the param 'end' in the config.JSON
 **/
-var updateLastSynced = function(config,syncConfig,lastSync){
-  var syncFile = './sync.json';
-  var file = require(syncFile);
-
+var updateLastSynced = function(config,lastSync){
   var configFile = '../conf.json';
-  var file2 = require(configFile);
+  var file = require(configFile);
 
   file.lastSynced = lastSync;
-  syncConfig.lastSynced = lastSync;
+  config.lastSynced = lastSync;
 
-  fs.writeFile('sync.json', JSON.stringify(file, null, 2), function (err) {
+  fs.writeFile('conf.json', JSON.stringify(file, null, 2), function (err) {
     if (err) return console.log(err);
     //console.log('writing block ' + lastSync + ' to ' + configFile);
 
-    if (syncConfig.lastSynced === syncConfig.startBlock){
+    if (config.lastSynced === config.startBlock){
       config.syncAll = false;
-      file2.syncAll  = false;
-      fs.writeFile('conf.json', JSON.stringify(file2, null, 2), function (err) {
+      file.syncAll  = false;
+      fs.writeFile('conf.json', JSON.stringify(file, null, 2), function (err) {
         if (err) return console.log(err);
       });
     }else{
-      syncChain(config, web3, syncConfig.lastSynced);
+      syncChain(config, web3, config.lastSynced);
     }
   });
 }
-var patchBlocks = function(config, web3){
-  if (syncConfig.startBlock < blockData.number){
-
-  }
+/**
+  Start config for node connection and sync
+**/
+var config = {};
+// set the default NODE address to localhost if it's not provided
+if (!('nodeAddr' in config) || !(config.nodeAddr)) {
+    config.nodeAddr = 'localhost'; // default
 }
-// Starts full sync when set to true in config
-if (config.syncAll === true){
-  syncChain(config,syncConfig,web3);
+// set the default geth port if it's not provided
+if (!('gethPort' in config) || (typeof config.gethPort) !== 'number') {
+    config.gethPort = 8545; // default
 }
-//Start listen for new blocks
+// set the default output directory if it's not provided
+if (!('output' in config) || (typeof config.output) !== 'string') {
+    config.output = '.'; // default this directory
+}
 listenBlocks(config);
