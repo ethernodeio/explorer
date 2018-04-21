@@ -40,3 +40,5 @@ catch (error) {
         process.exit(1);
     }
 }
+
+listenBlocks(config);

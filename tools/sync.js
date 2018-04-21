@@ -186,4 +186,3 @@ var patchBlocks = function(config, web3){
 }
 module.exports.syncChain = syncChain;
 require('./config.js');
-listenBlocks(config);
