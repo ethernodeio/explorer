@@ -75,10 +75,10 @@ var syncChain = function(config,syncConfig,web3,blockHashOrNumber) {
           var lastSync = blockData.number;
           updateLastSynced(config,syncConfig,lastSync);
         }else{
-          console.log('Found last full sync record: ' + config.lastSynced);
+          console.log('Found last full sync record: ' + syncConfig.lastSynced);
           writeBlockToDB(config, blockData);
           writeTransactionsToDB(config, blockData);
-          var lastSync = config.lastSynced - 1;
+          var lastSync = syncConfig.lastSynced - 1;
           updateLastSynced(config,syncConfig,lastSync);
         }
       }
@@ -186,7 +186,7 @@ var updateLastSynced = function(config,syncConfig,lastSync){
   });
 }
 var patchBlocks = function(config, web3){
-  if (config.startBlock < blockData.number){
+  if (syncConfig.startBlock < blockData.number){
 
   }
 }
