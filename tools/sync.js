@@ -49,10 +49,7 @@ var listenBlocks = function(config) {
 /**
   If full sync is checked this function will start syncing the block chain from lastSynced param see README
 **/
-var syncChain = function(config, web3, blockHashOrNumber) {
-  if(blockHashOrNumber == undefined) {
-    blockHashOrNumber = config.endBlock
-  }
+var syncChain = function(config,web3,blockHashOrNumber) {
   if(web3.isConnected()) {
     web3.eth.getBlock(blockHashOrNumber, true, function(error, blockData) {
       if(error) {
@@ -60,18 +57,14 @@ var syncChain = function(config, web3, blockHashOrNumber) {
       }else if(blockData == null) {
         console.log('Warning: null block data received from the block with hash/number: ' + blockHashOrNumber);
        }else{
-        if(config.lastSynced === 0){
+        if(blockHashOrNumber === 0){
           console.log('No last full sync record found, start from block: latest');
-          writeBlockToDB(config, blockData);
-          writeTransactionsToDB(config, blockData);
-          var lastSync = blockData.number;
-          updateLastSynced(config, lastSync);
+          //writeBlockToDB(config, blockData);
+          //writeTransactionsToDB(config, blockData);
         }else{
-          console.log('Found last full sync record: ' + config.lastSynced);
-          writeBlockToDB(config, blockData);
-          writeTransactionsToDB(config, blockData);
-          var lastSync = config.lastSynced - 1;
-          updateLastSynced(config, lastSync);
+          console.log('Found last full sync record: ' + blockHashOrNumber);
+          //writeBlockToDB(config, blockData);
+          //writeTransactionsToDB(config, blockData);
         }
       }
     });
@@ -138,40 +131,11 @@ var checkBlockDBExistsThenWrite = function(config, blockData) {
       }
   });
 };
-var updatedEndBlock = function(config,lastBlock){
-  var configFile = '../conf.json';
-  var file = require(configFile);
-
-  file.endBlock = lastBlock;
-
-  fs.writeFile('conf.json', JSON.stringify(file, null, 2), function (err) {
-    if (err) return console.log(err);
-    //console.log('Wirting new Synced Block ' + lastBlock + ' to ' + configFile);
-  });
-};
-/**
-  Take the last block the grabber exited on and update the param 'end' in the config.JSON
-**/
-var updateLastSynced = function(config,lastSync){
-  var configFile = '../conf.json';
-  var file = require(configFile);
-
-  file.lastSynced = lastSync;
-  config.lastSynced = lastSync;
-
-  fs.writeFile('conf.json', JSON.stringify(file, null, 2), function (err) {
-    if (err) return console.log(err);
-    //console.log('writing block ' + lastSync + ' to ' + configFile);
-
-    if (config.lastSynced === config.startBlock){
-      config.syncAll = false;
-      file.syncAll  = false;
-      fs.writeFile('conf.json', JSON.stringify(file, null, 2), function (err) {
-        if (err) return console.log(err);
-      });
-    }else{
-      syncChain(config, web3, config.lastSynced);
-    }
+var getLastBlockDB = function(res) {
+  var blockFind = Block.find({}, "number").lean(true).sort('-number').limit(1);
+  blockFind.exec(function (err, docs) {
+    var nextBlock = docs[0].number;
+    syncChain(config,web3,nextBlock);
   });
 }
 /**
