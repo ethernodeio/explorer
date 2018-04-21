@@ -6,6 +6,7 @@ require( './sync.js' );
   Start config for node connection and sync
 **/
 var config = {};
+var web3 = new Web3(new Web3.providers.HttpProvider('http://' + config.nodeAddr + ':' + config.gethPort.toString()));
 // set the default NODE address to localhost if it's not provided
 if (!('nodeAddr' in config) || !(config.nodeAddr)) {
     config.nodeAddr = 'localhost'; // default

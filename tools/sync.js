@@ -191,6 +191,7 @@ var patchBlocks = function(config, web3){
 }
 // Starts full sync when set to true in config
 if (config.syncAll === true){
+  var web3 = new Web3(new Web3.providers.HttpProvider('http://' + config.nodeAddr + ':' + config.gethPort.toString()));
   syncChain(config,syncConfig,web3);
 }
 //Start listen for new blocks
