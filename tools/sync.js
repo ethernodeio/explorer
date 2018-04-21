@@ -134,7 +134,7 @@ var checkBlockDBExistsThenWrite = function(config, blockData) {
   });
 };
 var getLastBlockDB = function() {
-  var blockFind = Block.find({}, "number").lean(true).sort('number').limit(1);
+  var blockFind = Block.find({}, "number").lean(true).sort('-number').limit(1);
   blockFind.exec(function (err, docs) {
     var nextBlock = docs[0].number;
     syncChain(config,web3,nextBlock);
