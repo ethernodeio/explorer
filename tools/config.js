@@ -1,6 +1,6 @@
 var fs = require('fs');
 var Web3 = require('web3');
-eval(fs.readFileSync('tools/sync.js')+'');
+require( './sync.js' );
 
 /**
   Start config for node connection and sync
