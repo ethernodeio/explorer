@@ -4,6 +4,7 @@ Version: .0.0.1
 This file will start syncing the blockchain from the node address you provide in the conf.json file.
 Please read the README in the root directory that explains the parameters of this code
 */
+require('./config.js');
 require( '../db.js' );
 var etherUnits = require("../lib/etherUnits.js");
 var BigNumber = require('bignumber.js');
@@ -37,12 +38,11 @@ var listenBlocks = function(config) {
             updatedEndBlock(config,blockData.number);
             writeBlockToDB(config, blockData);
             writeTransactionsToDB(config, blockData);
-            return;
           }
         });
       }else{
         console.log('Error: Web3 connection time out trying to get block ' + blockHashOrNumber + ' retrying connection now');
-        return;
+        listenBlocks(config);
       }
     }
   });
@@ -58,8 +58,11 @@ var syncChain = function(config, web3, blockHashOrNumber) {
     web3.eth.getBlock(blockHashOrNumber, true, function(error, blockData) {
       if(error) {
         console.log('Warning: error on getting block with hash/number: ' +   blockHashOrNumber + ': ' + error);
+        //
+        syncChain(config, web3, blockHashOrNumber);
       }else if(blockData == null) {
-        console.log('Warning: null block data received from the block with hash/number: ' + blockHashOrNumber);
+        console.log('Warning: null block data received from the block with hash/number: ' + blockHashOrNumber + ' Retrying in 5 seconds');
+
        }else{
         if(config.lastSynced === 0){
           console.log('No last full sync record found, start from block: latest');
@@ -175,40 +178,9 @@ var updateLastSynced = function(config,lastSync){
     }
   });
 }
-/**
-  Start config for node connection and sync
-**/
-var config = {};
-// set the default NODE address to localhost if it's not provided
-if (!('nodeAddr' in config) || !(config.nodeAddr)) {
-    config.nodeAddr = 'localhost'; // default
-}
-// set the default geth port if it's not provided
-if (!('gethPort' in config) || (typeof config.gethPort) !== 'number') {
-    config.gethPort = 8545; // default
-}
-// set the default output directory if it's not provided
-if (!('output' in config) || (typeof config.output) !== 'string') {
-    config.output = '.'; // default this directory
-}
-//Look for config.json file if not
-try {
-    var configContents = fs.readFileSync('conf.json');
-    config = JSON.parse(configContents);
-    console.log('CONFIG FOUND: Node:'+config.nodeAddr+' | Port:'+config.gethPort);
-    // Sets address for RPC WEb3 to connect to, usually your node address defaults ot localhost
-    var web3 = new Web3(new Web3.providers.HttpProvider('http://' + config.nodeAddr + ':' + config.gethPort.toString()));
-    if (config.syncAll === true){
-      syncChain(config,web3);
-    }
-}
-catch (error) {
-    if (error.code === 'ENOENT') {
-        console.log('No config file found. Using default configuration: Node:'+config.nodeAddr+' | Port:'+config.gethPort);
-    }
-    else {
-        throw error;
-        process.exit(1);
-    }
+var patchBlocks = function(config, web3){
+  if (config.startBlock < blockData.number){
+
+  }
 }
 listenBlocks(config);
