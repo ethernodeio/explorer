@@ -158,7 +158,7 @@ var updatedEndBlock = function(config,syncConfig,lastBlock){
   Take the last block the grabber exited on and update the param 'end' in the config.JSON
 **/
 var updateLastSynced = function(config,syncConfig,lastSync){
-  var syncFile = '../sync.json';
+  var syncFile = 'tools/sync.json';
   var file = require(syncFile);
 
   var configFile = '../conf.json';
