@@ -1,6 +1,6 @@
 var fs = require('fs');
 var Web3 = require('web3');
-var sync = require( './sync.js' );
+var sync = require( './sync' );
 
 
 /**
