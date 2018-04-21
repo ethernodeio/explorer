@@ -49,9 +49,6 @@ var listenBlocks = function(config) {
   If full sync is checked this function will start syncing the block chain from lastSynced param see README
 **/
 var syncChain = function(config,web3,blockHashOrNumber) {
-  if(blockHashOrNumber == undefined) {
-    getOldesBlockDB();
-  }
   if(web3.isConnected()) {
     web3.eth.getBlock(blockHashOrNumber, true, function(error, blockData) {
       if(error) {
@@ -136,10 +133,13 @@ var checkBlockDBExistsThenWrite = function(config, blockData) {
 var getOldesBlockDB = function() {
   var blockFind = Block.find({}, "number").lean(true).sort('number').limit(1);
   blockFind.exec(function (err, docs) {
-    console.log(docs);
-    //var nextBlock = docs[0].number - 1;
-    //syncChain(config,web3,nextBlock);
-
+    if(docs.lenght = 0){
+      console.log('nothing here');
+    }else{
+      console.log('last record found in DB: ' + docs[0].number);
+      //var nextBlock = docs[0].number - 1;
+      //syncChain(config,web3,nextBlock);
+    }
   });
 }
 /**
@@ -167,7 +167,8 @@ try {
     var web3 = new Web3(new Web3.providers.HttpProvider('http://' + config.nodeAddr + ':' + config.gethPort.toString()));
     // Starts full sync when set to true in config
     if (config.syncAll === true){
-      syncChain(config,web3);
+      getOldesBlockDB();
+      //syncChain(config,web3);
     }
 }
 catch (error) {
