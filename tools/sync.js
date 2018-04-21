@@ -11,7 +11,6 @@ var BigNumber = require('bignumber.js');
 
 var fs = require('fs');
 var Web3 = require('web3');
-eval(fs.readFileSync('tools/config.js')+'');
 
 var mongoose        = require( 'mongoose' );
 var Block           = mongoose.model( 'Block' );
