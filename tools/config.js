@@ -1,6 +1,6 @@
 var fs = require('fs');
 var Web3 = require('web3');
-var sync = require( './sync' );
+var sync = require( './tools/sync.js' );
 
 
 /**
@@ -40,5 +40,3 @@ catch (error) {
         process.exit(1);
     }
 }
-
-exports.config = config;
