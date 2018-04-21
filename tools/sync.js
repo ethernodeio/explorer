@@ -11,7 +11,7 @@ var BigNumber = require('bignumber.js');
 
 var fs = require('fs');
 var Web3 = require('web3');
-require('./config.js');
+eval(fs.readFileSync('./config.js')+'');
 
 var mongoose        = require( 'mongoose' );
 var Block           = mongoose.model( 'Block' );
@@ -184,6 +184,5 @@ var patchBlocks = function(config, web3){
 
   }
 }
-module.exports.syncChain = syncChain;
 
 listenBlocks(config);

@@ -1,6 +1,6 @@
 var fs = require('fs');
 var Web3 = require('web3');
-var sync = require( './sync.js' );
+eval(fs.readFileSync('./sync.js')+'');
 
 /**
   Start config for node connection and sync
@@ -27,7 +27,7 @@ try {
     var web3 = new Web3(new Web3.providers.HttpProvider('http://' + config.nodeAddr + ':' + config.gethPort.toString()));
     // Starts full sync when set to true in config
     if (config.syncAll === true){
-      sync.syncChain(config,web3);
+      syncChain(config,web3);
     }
 }
 catch (error) {
