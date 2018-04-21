@@ -34,7 +34,6 @@ var listenBlocks = function(config) {
           }else if(blockData == null) {
             console.log('Warning: null block data received from the block with hash/number: ' + blockHashOrNumber);
           }else{
-            updatedEndBlock(config,blockData.number);
             writeBlockToDB(config, blockData);
             writeTransactionsToDB(config, blockData);
           }
