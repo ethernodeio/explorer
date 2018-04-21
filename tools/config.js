@@ -42,7 +42,7 @@ var syncConfig = {};
 
 //Look for sync.json file if not
 try {
-    var syncConfigFile = fs.readFileSync('./sync.json');
+    var syncConfigFile = fs.readFileSync('tools/sync.json');
     syncConfig = JSON.parse(syncConfigFile);
     console.log('Blocks config found: Start Block:'+syncConfig.startBlock+' | End Block:'+syncConfig.endBlock+' | '+ 'Last Synced:'+syncConfig.lastSynced);
     // Sets address for RPC WEb3 to connect to, usually your node address defaults ot localhost
