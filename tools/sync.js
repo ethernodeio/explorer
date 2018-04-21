@@ -53,18 +53,21 @@ var syncChain = function(config,web3,blockHashOrNumber){
     web3.eth.getBlock(blockHashOrNumber, true, function(error, blockData) {
       if(error) {
         console.log('Warning: error on getting block with hash/number: ' +   blockHashOrNumber + ': ' + error);
+        getOldestBlockDB();
       }else if(blockData == null) {
         console.log('Warning: null block data received from the block with hash/number: ' + blockHashOrNumber);
+        getOldestBlockDB();      
       }else{
         writeBlockToDB(config, blockData);
         writeTransactionsToDB(config, blockData);
+        getOldestBlockDB();
       }
-    }
+    });
   }else{
     console.log('Error: Web3 connection time out trying to get block ' + blockHashOrNumber + ' retrying connection now');
     syncChain(config, web3, blockHashOrNumber);
-  };
-};
+  }
+}
 /**
   Write the whole block object to DB
 **/
@@ -123,7 +126,7 @@ var checkBlockDBExistsThenWrite = function(config, blockData) {
       }
   });
 };
-var getOldesBlockDB = function() {
+var getOldestBlockDB = function() {
   var blockFind = Block.find({}, "number").lean(true).sort('number').limit(1);
   blockFind.exec(function (err, docs) {
     if(docs.length < 1){
@@ -160,7 +163,7 @@ try {
     var web3 = new Web3(new Web3.providers.HttpProvider('http://' + config.nodeAddr + ':' + config.gethPort.toString()));
     // Starts full sync when set to true in config
     if (config.syncAll === true){
-      getOldesBlockDB();
+      getOldestBlockDB();
       //syncChain(config,web3);
     }
 }
