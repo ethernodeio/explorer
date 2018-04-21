@@ -2,7 +2,6 @@ var fs = require('fs');
 var Web3 = require('web3');
 var sync = require( './tools/sync.js' );
 
-
 /**
   Start config for node connection and sync
 **/
