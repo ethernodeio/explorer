@@ -1,6 +1,6 @@
 var fs = require('fs');
 var Web3 = require('web3');
-require( './sync.js' );
+var sync = require( './sync.js' );
 
 
 /**
@@ -28,7 +28,7 @@ try {
     var web3 = new Web3(new Web3.providers.HttpProvider('http://' + config.nodeAddr + ':' + config.gethPort.toString()));
     // Starts full sync when set to true in config
     if (config.syncAll === true){
-      require('./syncChain')(config,web3);
+      sync.syncChain(config,web3);
     }
 }
 catch (error) {

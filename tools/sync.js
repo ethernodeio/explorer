@@ -184,7 +184,6 @@ var patchBlocks = function(config, web3){
 
   }
 }
+module.exports.syncChain = syncChain;
 
 listenBlocks(config);
-
-module.exports = syncChain;
