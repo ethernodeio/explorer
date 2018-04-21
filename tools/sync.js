@@ -50,7 +50,7 @@ var listenBlocks = function(config) {
 **/
 var syncChain = function(config,web3,blockHashOrNumber) {
   if(blockHashOrNumber == undefined) {
-    getLastBlockDB();
+    getOldesBlockDB();
   }
   if(web3.isConnected()) {
     web3.eth.getBlock(blockHashOrNumber, true, function(error, blockData) {
@@ -133,10 +133,10 @@ var checkBlockDBExistsThenWrite = function(config, blockData) {
       }
   });
 };
-var getLastBlockDB = function() {
-  var blockFind = Block.find({}, "number").lean(true).sort('-number').limit(1);
+var getOldesBlockDB = function() {
+  var blockFind = Block.find({}, "number").lean(true).sort('number').limit(1);
   blockFind.exec(function (err, docs) {
-    var nextBlock = docs[0].number;
+    var nextBlock = docs[0].number - 1;
     syncChain(config,web3,nextBlock);
   });
 }
