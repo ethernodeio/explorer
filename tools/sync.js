@@ -48,29 +48,22 @@ var listenBlocks = function(config) {
 /**
   If full sync is checked this function will start syncing the block chain from lastSynced param see README
 **/
-var syncChain = function(config,web3,blockHashOrNumber) {
+var syncChain = function(config,web3,blockHashOrNumber){
   if(web3.isConnected()) {
     web3.eth.getBlock(blockHashOrNumber, true, function(error, blockData) {
       if(error) {
         console.log('Warning: error on getting block with hash/number: ' +   blockHashOrNumber + ': ' + error);
       }else if(blockData == null) {
         console.log('Warning: null block data received from the block with hash/number: ' + blockHashOrNumber);
-       }else{
-        if(blockHashOrNumber === 0){
-          console.log('No last full sync record found, start from block: latest');
-          //writeBlockToDB(config, blockData);
-          //writeTransactionsToDB(config, blockData);
-        }else{
-          console.log('Found last full sync record: ' + blockHashOrNumber);
-          //writeBlockToDB(config, blockData);
-          //writeTransactionsToDB(config, blockData);
-        }
+      }else{
+        writeBlockToDB(config, blockData);
+        writeTransactionsToDB(config, blockData);
       }
-    });
+    }
   }else{
     console.log('Error: Web3 connection time out trying to get block ' + blockHashOrNumber + ' retrying connection now');
     syncChain(config, web3, blockHashOrNumber);
-  }
+  };
 };
 /**
   Write the whole block object to DB
@@ -137,8 +130,8 @@ var getOldesBlockDB = function() {
       console.log('nothing here');
     }else{
       console.log('last record found in DB: ' + docs[0].number);
-      //var nextBlock = docs[0].number - 1;
-      //syncChain(config,web3,nextBlock);
+      var nextBlock = docs[0].number - 1;
+      syncChain(config,web3,nextBlock);
     }
   });
 }
