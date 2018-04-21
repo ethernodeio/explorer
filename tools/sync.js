@@ -136,8 +136,10 @@ var checkBlockDBExistsThenWrite = function(config, blockData) {
 var getOldesBlockDB = function() {
   var blockFind = Block.find({}, "number").lean(true).sort('number').limit(1);
   blockFind.exec(function (err, docs) {
-    var nextBlock = docs[0].number - 1;
-    syncChain(config,web3,nextBlock);
+    console.log(docs);
+    //var nextBlock = docs[0].number - 1;
+    //syncChain(config,web3,nextBlock);
+
   });
 }
 /**
