@@ -152,7 +152,7 @@ var getOldestBlockDB = function() {
 **/
 var runPatcher = function(config,lastBlock) {
   var latestBlockFind = Block.find({}, "number").lean(true).sort('-number').limit(1);
-  blockFind.exec(function (err, docs) {
+  latestBlockFind.exec(function (err, docs) {
     var lastestBlock = web3.eth.filter("latest");
     var lastSyncBlock = docs[0].number;
     console.log(lastestBlock);
