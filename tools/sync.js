@@ -138,6 +138,10 @@ var getOldestBlockDB = function() {
     }
   });
 }
+var patchBlocks(){
+  var x = 500;
+  for (i=x,  )
+}
 /**
   Start config for node connection and sync
 **/
@@ -159,12 +163,6 @@ try {
     var configContents = fs.readFileSync('conf.json');
     config = JSON.parse(configContents);
     console.log('CONFIG FOUND: Node:'+config.nodeAddr+' | Port:'+config.gethPort);
-    // Sets address for RPC WEb3 to connect to, usually your node address defaults ot localhost
-    var web3 = new Web3(new Web3.providers.HttpProvider('http://' + config.nodeAddr + ':' + config.gethPort.toString()));
-    // Starts full sync when set to true in config
-    if (config.syncAll === true){
-      getOldestBlockDB();
-    }
 }
 catch (error) {
     if (error.code === 'ENOENT') {
@@ -175,4 +173,11 @@ catch (error) {
         process.exit(1);
     }
 }
+// Starts full sync when set to true in config
+if (config.syncAll === true){
+  getOldestBlockDB();
+}
+// Sets address for RPC WEb3 to connect to, usually your node address defaults ot localhost
+var web3 = new Web3(new Web3.providers.HttpProvider('http://' + config.nodeAddr + ':' + config.gethPort.toString()));
+// Start listening for latest blocks
 listenBlocks(config);
