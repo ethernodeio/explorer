@@ -123,12 +123,12 @@ var writeTransactionsToDB = function(config, blockData) {
 **/
 var checkBlockDBExistsThenWrite = function(config, blockData) {
   Block.find({number: blockData.number}, function (err, b) {
-      if (!b.length){
-          writeBlockToDB(config, blockData);
-          writeTransactionsToDB(config, blockData);
-      }else if(!('quiet' in config && config.quiet === true)) {
-        console.log('Block number: ' + blockData.number.toString() + ' already exists in DB.');
-      }
+    if (!b.length){
+      writeBlockToDB(config, blockData);
+      writeTransactionsToDB(config, blockData);
+    }else if(!('quiet' in config && config.quiet === true)) {
+      console.log('Block number: ' + blockData.number.toString() + ' already exists in DB.');
+    }
   });
 };
 /**
@@ -155,15 +155,15 @@ var getOldestBlockDB = function() {
 var config = {};
 // set the default NODE address to localhost if it's not provided
 if (!('nodeAddr' in config) || !(config.nodeAddr)) {
-    config.nodeAddr = 'localhost'; // default
+  config.nodeAddr = 'localhost'; // default
 }
 // set the default geth port if it's not provided
 if (!('gethPort' in config) || (typeof config.gethPort) !== 'number') {
-    config.gethPort = 8545; // default
+  config.gethPort = 8545; // default
 }
 // set the default output directory if it's not provided
 if (!('output' in config) || (typeof config.output) !== 'string') {
-    config.output = '.'; // default this directory
+  config.output = '.'; // default this directory
 }
 //Look for config.json file if not
 try {
@@ -172,13 +172,13 @@ try {
     console.log('CONFIG FOUND: Node:'+config.nodeAddr+' | Port:'+config.gethPort);
 }
 catch (error) {
-    if (error.code === 'ENOENT') {
-        console.log('No config file found. Using default configuration: Node:'+config.nodeAddr+' | Port:'+config.gethPort);
-    }
-    else {
-        throw error;
-        process.exit(1);
-    }
+  if (error.code === 'ENOENT') {
+      console.log('No config file found. Using default configuration: Node:'+config.nodeAddr+' | Port:'+config.gethPort);
+  }
+  else {
+      throw error;
+      process.exit(1);
+  }
 }
 // Starts full sync when set to true in config
 if (config.syncAll === true){
