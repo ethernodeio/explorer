@@ -135,14 +135,14 @@ var checkBlockDBExistsThenWrite = function(config, blockData) {
   //Check oldest block in db and start sync from tehre
 **/
 var getOldestBlockDB = function() {
-  var blockFind = Block.find({}, "number").lean(true).sort('-number').limit(1);
+  var blockFind = Block.find({}, "number").lean(true).sort('number').limit(1);
   blockFind.exec(function (err, docs) {
     if(docs.length < 1){
       console.log('nothing here starting from latest');
     }else{
-      var nextBlock = docs[0].number - 1;
+      var nextBlock = docs[0].number;
       console.log(docs);
-      syncChain(config,web3,nextBlock);
+      //syncChain(config,web3,nextBlock);
     }
   });
 }
