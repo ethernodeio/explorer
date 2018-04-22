@@ -140,7 +140,6 @@ var getOldestBlockDB = function() {
 }
 var patchBlocks(){
   var x = 500;
-  for (i=x,  )
 }
 /**
   Start config for node connection and sync
