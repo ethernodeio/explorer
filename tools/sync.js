@@ -58,7 +58,7 @@ var syncChain = function(config,web3,blockHashOrNumber){
         console.log('Warning: null block data received from the block with hash/number: ' + blockHashOrNumber);
         getOldestBlockDB();
       }else{
-        //writeBlockToDB(config, blockData);
+        writeBlockToDB(config, blockData);
         writeTransactionsToDB(config, blockData);
         getOldestBlockDB();
       }
