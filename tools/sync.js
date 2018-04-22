@@ -132,7 +132,7 @@ var checkBlockDBExistsThenWrite = function(config, blockData) {
 /**
   //Check oldest block in db and start sync from tehre
 **/
-var getOldestBlockDB = function(config) {
+var getOldestBlockDB = function() {
   var oldBlockFind = Block.find({}, "number").lean(true).sort('number').limit(1);
   oldBlockFind.exec(function (err, docs) {
     if(docs.length < 1){
