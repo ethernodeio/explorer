@@ -164,7 +164,6 @@ try {
     // Starts full sync when set to true in config
     if (config.syncAll === true){
       getOldestBlockDB();
-      //syncChain(config,web3);
     }
 }
 catch (error) {
