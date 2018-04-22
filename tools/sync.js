@@ -50,7 +50,7 @@ var listenBlocks = function(config) {
 **/
 var syncChain = function(config,web3,nextBlock){
   if(web3.isConnected()) {
-    web3.eth.getBlock(nextBlock, true, function(error,nextBlock) {
+    web3.eth.getBlock(nextBlock, true, function(error,blockData) {
       if(error) {
         console.log('Warning: error on getting block with hash/number: ' + nextBlock + ': ' + error);
         getOldestBlockDB();
