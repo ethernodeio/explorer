@@ -153,26 +153,24 @@ var getOldestBlockDB = function() {
 var runPatcher = function(config) {
   var latestBlockFind = Block.find({}, "number").lean(true).sort('-number').limit(1);
   latestBlockFind.exec(function (err, docs) {
-    var lastestBlock = web3.eth.blockNumber;
-    var lastSyncBlock = docs[0].number;
-    if(lastSyncBlock < lastestBlock){
-      blocksBehind = lastestBlock - lastSyncBlock;
-      console.log('The database is currently ' + blocksBehind +' blocks behind');
-      while(lastSyncBlock < lastestBlock){
-        patchBlock = lastSyncBlock + 1;
-        web3.eth.getBlock(patchBlock, true, function(error,patchData) {
-          if(error) {
-            console.log('Warning: error on getting block with hash/number: ' + patchBlock + ': ' + error);
-            runPatcher();
-          }else if(patchData == null) {
-            console.log('Warning: null block data received from the block with hash/number: ' + patchBlock);
-            runPatcher();
-          }else{
-            writeBlockToDB(config, patchData);
-            writeTransactionsToDB(config, patchData);
-          }
-        });
-      }
+  var lastestBlock = web3.eth.blockNumber;
+  var lastSyncBlock = docs[0].number;
+  if(lastSyncBlock < lastestBlock){
+    blocksBehind = lastestBlock - lastSyncBlock;
+    console.log('The database is currently ' + blocksBehind +' blocks behind');
+      patchBlock = lastSyncBlock + 1;
+      web3.eth.getBlock(patchBlock, true, function(error,patchData) {
+        if(error) {
+          console.log('Warning: error on getting block with hash/number: ' + patchBlock + ': ' + error);
+          runPatcher();
+        }else if(patchData == null) {
+          console.log('Warning: null block data received from the block with hash/number: ' + patchBlock);
+          runPatcher();
+        }else{
+          writeBlockToDB(config, patchData);
+          writeTransactionsToDB(config, patchData);
+        }
+      });
     }else{
       console.log('All Caught up');
       config.patch = false;
