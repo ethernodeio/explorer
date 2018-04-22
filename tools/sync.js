@@ -132,7 +132,7 @@ var checkBlockDBExistsThenWrite = function(config, blockData) {
 /**
   //Check oldest block in db and start sync from tehre
 **/
-var getOldestBlockDB = function() {
+var getOldestBlockDB = function(config) {
   var oldBlockFind = Block.find({}, "number").lean(true).sort('number').limit(1);
   oldBlockFind.exec(function (err, docs) {
     if(docs.length < 1){
@@ -150,7 +150,7 @@ var getOldestBlockDB = function() {
 /**
   //Block Patcher
 **/
-var runPatcher = function(config,lastBlock) {
+var runPatcher = function(config) {
   var latestBlockFind = Block.find({}, "number").lean(true).sort('-number').limit(1);
   latestBlockFind.exec(function (err, docs) {
     var lastestBlock = web3.eth.filter("latest");
@@ -203,7 +203,11 @@ catch (error) {
 }
 // Starts full sync when set to true in config
 if (config.syncAll === true){
-  getOldestBlockDB();
+  getOldestBlockDB(config);
+}
+// Starts full sync when set to true in config
+if (config.patch === true){
+  runPatcher(config);
 }
 // Sets address for RPC WEb3 to connect to, usually your node address defaults ot localhost
 var web3 = new Web3(new Web3.providers.HttpProvider('http://' + config.nodeAddr + ':' + config.gethPort.toString()));
