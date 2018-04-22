@@ -60,7 +60,6 @@ var syncChain = function(config,web3,nextBlock){
       }else{
         writeBlockToDB(config, blockData);
         writeTransactionsToDB(config, blockData);
-        getOldestBlockDB();
       }
     });
   }else{
@@ -84,6 +83,14 @@ var writeBlockToDB = function(config, blockData) {
       }
     }else{
       console.log('DB successfully written for block number ' + blockData.number.toString() );
+      // Starts full sync when set to true in config
+      if (config.syncAll === true){
+        getOldestBlockDB(config);
+      }
+      // Starts full sync when set to true in config
+      if (config.patch === true){
+        runPatcher(config);
+      }
     }
   });
 }
@@ -112,6 +119,14 @@ var writeTransactionsToDB = function(config, blockData) {
         }
       }else{
         console.log(blockData.transactions.length.toString() + ' transactions recorded for Block# ' + blockData.number.toString());
+        // Starts full sync when set to true in config
+        if (config.syncAll === true){
+          getOldestBlockDB(config);
+        }
+        // Starts full sync when set to true in config
+        if (config.patch === true){
+          runPatcher(config);
+        }
       }
     });
   }
