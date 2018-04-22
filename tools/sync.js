@@ -83,9 +83,7 @@ var writeBlockToDB = function(config, blockData) {
         process.exit(9);
       }
     }else{
-      if(!('quiet' in config && config.quiet === true)) {
-        console.log('DB successfully written for block number ' + blockData.number.toString() );
-      }
+      console.log('DB successfully written for block number ' + blockData.number.toString() );
     }
   });
 }
