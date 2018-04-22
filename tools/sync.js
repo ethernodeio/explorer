@@ -141,8 +141,8 @@ var getOldestBlockDB = function() {
       console.log('nothing here starting from latest');
     }else{
       var nextBlock = docs[0].number;
-      console.log('getting next block: ' + nextBlock);
-      syncChain(config,web3,nextBlock);
+      console.log(docs);
+      //syncChain(config,web3,nextBlock);
     }
   });
 }
