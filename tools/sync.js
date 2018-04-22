@@ -140,8 +140,8 @@ var getOldestBlockDB = function() {
     if(docs.length < 1){
       console.log('nothing here starting from latest');
     }else{
-      console.log('last record found in DB: ' + docs[0].number);
       var nextBlock = (docs[0].number - 1);
+      console.log('getting next block: ' + nextBlock);
       syncChain(config,web3,nextBlock);
     }
   });
