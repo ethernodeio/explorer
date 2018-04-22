@@ -160,16 +160,16 @@ var runPatcher = function(config) {
       console.log('The database is currently ' + blocksBehind +' blocks behind');
       while(lastSyncBlock < lastestBlock){
         patchBlock = lastSyncBlock + 1;
-        web3.eth.getBlock(nextBlock, true, function(error,blockData) {
+        web3.eth.getBlock(patchBlock, true, function(error,patchData) {
           if(error) {
-            console.log('Warning: error on getting block with hash/number: ' + nextBlock + ': ' + error);
+            console.log('Warning: error on getting block with hash/number: ' + patchBlock + ': ' + error);
             runPatcher();
-          }else if(blockData == null) {
-            console.log('Warning: null block data received from the block with hash/number: ' + nextBlock);
+          }else if(patchData == null) {
+            console.log('Warning: null block data received from the block with hash/number: ' + patchBlock);
             runPatcher();
           }else{
-            writeBlockToDB(config, blockData);
-            writeTransactionsToDB(config, blockData);
+            writeBlockToDB(config, patchData);
+            writeTransactionsToDB(config, patchData);
           }
         });
       }
