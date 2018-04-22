@@ -140,9 +140,9 @@ var getOldestBlockDB = function() {
     if(docs.length < 1){
       console.log('nothing here starting from latest');
     }else{
-      var nextBlock = docs[0].number;
+      var nextBlock = (docs[0].number - 1);
       console.log(docs);
-      //syncChain(config,web3,nextBlock);
+      syncChain(config,web3,nextBlock);
     }
   });
 }
@@ -184,4 +184,4 @@ if (config.syncAll === true){
 // Sets address for RPC WEb3 to connect to, usually your node address defaults ot localhost
 var web3 = new Web3(new Web3.providers.HttpProvider('http://' + config.nodeAddr + ':' + config.gethPort.toString()));
 // Start listening for latest blocks
-//listenBlocks(config);
+listenBlocks(config);
