@@ -49,7 +49,6 @@ var listenBlocks = function(config) {
   If full sync is checked this function will start syncing the block chain from lastSynced param see README
 **/
 var syncChain = function(config,web3,nextBlock){
-  var nextBlock = (nextBlock - 1);
   if(web3.isConnected()) {
     web3.eth.getBlock(nextBlock, true, function(error,blockData) {
       if(error) {
@@ -141,8 +140,12 @@ var getOldestBlockDB = function() {
     if(docs.length < 1){
       console.log('nothing here starting from latest');
     }else{
-      var nextBlock = (docs[0].number);
-      syncChain(config,web3,nextBlock);
+      var nextBlock = (docs[0].number - 1);
+      if(nextBlock == config.startBlock){
+        return;
+      }else{
+        syncChain(config,web3,nextBlock);
+      }
     }
   });
 }
