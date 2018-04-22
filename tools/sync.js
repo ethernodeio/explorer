@@ -104,35 +104,47 @@ var writeTransactionsToDB = function(config, blockData) {
     Transaction.collection.insert(bulkOps, function( err, tx ){
       if ( typeof err !== 'undefined' && err ) {
         if (err.code == 11000) {
-          console.log('Skip: Duplicate key ' + err);
-            } else {
-               console.log('Error: Aborted due to error: ' + err);
-               process.exit(9);
-           }
-        } else if(!('quiet' in config && config.quiet === true)) {
-            console.log(blockData.transactions.length.toString() + ' transactions recorded for Block# ' + blockData.number.toString());
+          if(!('quiet' in config && config.quiet === true)) {
+            console.log('Skip: Duplicate key ' + err);
+          }
+        }else{
+          console.log('Error: Aborted due to error: ' + err);
+          getOldestBlockDB();
+          //process.exit(9);
         }
+      }else{
+        if(!('quiet' in config && config.quiet === true)) {
+          console.log(blockData.transactions.length.toString() + ' transactions recorded for Block# ' + blockData.number.toString());
+        }else{
+          console.log('transactions recorded for Block# ' + blockData.number.toString());
+        }
+      }
     });
   }
 }
+/**
+  //This will be used for the patcher(disabled atm)
+**/
 var checkBlockDBExistsThenWrite = function(config, blockData) {
   Block.find({number: blockData.number}, function (err, b) {
       if (!b.length){
           writeBlockToDB(config, blockData);
           writeTransactionsToDB(config, blockData);
       }else if(!('quiet' in config && config.quiet === true)) {
-          console.log('Block number: ' + blockData.number.toString() + ' already exists in DB.');
-
+        console.log('Block number: ' + blockData.number.toString() + ' already exists in DB.');
       }
   });
 };
+/**
+  //Check oldest block in db and start sync from tehre
+**/
 var getOldestBlockDB = function() {
   var blockFind = Block.find({}, "number").lean(true).sort('number').limit(2);
   blockFind.exec(function (err, docs) {
     if(docs.length < 1){
-      console.log('nothing here');
+      console.log('nothing here starting from latest');
     }else{
-      console.log('last record found in DB: ' + docs[0].number);
+      //console.log('last record found in DB: ' + docs[0].number);
       var nextBlock = docs[0].number - 1;
       syncChain(config,web3,nextBlock);
     }
