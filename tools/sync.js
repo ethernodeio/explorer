@@ -184,4 +184,4 @@ if (config.syncAll === true){
 // Sets address for RPC WEb3 to connect to, usually your node address defaults ot localhost
 var web3 = new Web3(new Web3.providers.HttpProvider('http://' + config.nodeAddr + ':' + config.gethPort.toString()));
 // Start listening for latest blocks
-listenBlocks(config);
+//listenBlocks(config);
