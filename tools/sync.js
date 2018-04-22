@@ -163,6 +163,7 @@ var runPatcher = function(config,lastBlock) {
       while(lastSyncBlock < lastBlock){
         patchBlock = lastSyncBlock + 1;
         syncChain(config,web3,patchBlock);
+      }
     }else{
       config.patch = false;
     }
