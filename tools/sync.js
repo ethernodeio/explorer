@@ -138,9 +138,6 @@ var getOldestBlockDB = function() {
     }
   });
 }
-var patchBlocks(){
-  var x = 500;
-}
 /**
   Start config for node connection and sync
 **/
