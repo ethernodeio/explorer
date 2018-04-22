@@ -44,9 +44,6 @@ var listenBlocks = function(config) {
       }
     }
   });
-  if(config.patch == true){
-    runPatcher(config,blockData.number);
-  }
 }
 /**
   If full sync is checked this function will start syncing the block chain from lastSynced param see README
@@ -156,7 +153,10 @@ var getOldestBlockDB = function() {
 var runPatcher = function(config,lastBlock) {
   var latestBlockFind = Block.find({}, "number").lean(true).sort('-number').limit(1);
   blockFind.exec(function (err, docs) {
+    var lastestBlock = web3.eth.filter("latest");
     var lastSyncBlock = docs[0].number;
+    console.log(lastestBlock);
+/*
     if(lastSyncBlock < lastBlock){
       blocksBehind = lastBlock - lastSyncBlock;
       console.log('The data base is currently ' + blocksBehind +' blocks behind');
@@ -167,6 +167,7 @@ var runPatcher = function(config,lastBlock) {
     }else{
       config.patch = false;
     }
+*/
   });
 }
 /**
