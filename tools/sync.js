@@ -72,7 +72,7 @@ var syncChain = function(config,web3,nextBlock){
   Write the whole block object to DB
 **/
 var writeBlockToDB = function(config, blockData) {
-  return new Block(blockData).save( function( err, block, count ){
+  new Block(blockData).save( function( err, block, count ){
     if ( typeof err !== 'undefined' && err ) {
       if (err.code == 11000) {
         if(!('quiet' in config && config.quiet === true)) {
