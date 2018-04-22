@@ -155,19 +155,16 @@ var runPatcher = function(config) {
   latestBlockFind.exec(function (err, docs) {
     var lastestBlock = web3.eth.blockNumber;
     var lastSyncBlock = docs[0].number;
-    console.log(lastestBlock);
-/*
-    if(lastSyncBlock < lastBlock){
-      blocksBehind = lastBlock - lastSyncBlock;
+    if(lastSyncBlock < lastestBlock){
+      blocksBehind = lastestBlock - lastSyncBlock;
       console.log('The data base is currently ' + blocksBehind +' blocks behind');
-      while(lastSyncBlock < lastBlock){
+      while(lastSyncBlock < lastestBlock){
         patchBlock = lastSyncBlock + 1;
-        syncChain(config,web3,patchBlock);
+        //syncChain(config,web3,patchBlock);
       }
     }else{
       config.patch = false;
     }
-*/
   });
 }
 /**
