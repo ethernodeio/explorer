@@ -149,7 +149,7 @@ var getOldestBlockDB = function() {
 }
 /**
   //Block Patcher
-
+**/
 var runPatcher = function(config) {
   var latestBlockFind = Block.find({}, "number").lean(true).sort('-number').limit(1);
   latestBlockFind.exec(function (err, docs) {
@@ -160,7 +160,18 @@ var runPatcher = function(config) {
       console.log('The database is currently ' + blocksBehind +' blocks behind');
       while(lastSyncBlock < lastestBlock){
         patchBlock = lastSyncBlock + 1;
-        //syncChain(config,web3,patchBlock);
+        web3.eth.getBlock(nextBlock, true, function(error,blockData) {
+          if(error) {
+            console.log('Warning: error on getting block with hash/number: ' + nextBlock + ': ' + error);
+            runPatcher();
+          }else if(blockData == null) {
+            console.log('Warning: null block data received from the block with hash/number: ' + nextBlock);
+            runPatcher();
+          }else{
+            writeBlockToDB(config, blockData);
+            writeTransactionsToDB(config, blockData);
+          }
+        });
       }
     }else{
       console.log('All Caught up');
@@ -169,7 +180,6 @@ var runPatcher = function(config) {
     }
   });
 }
-**/
 /**
   Start config for node connection and sync
 **/
