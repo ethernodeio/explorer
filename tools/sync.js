@@ -20,26 +20,26 @@ var Transaction     = mongoose.model( 'Transaction' );
 **/
 var listenBlocks = function(config) {
     var newBlocks = web3.eth.filter("latest");
-    newBlocks.watch(function (error,blockHashOrNumber) {
+    newBlocks.watch(function (error,latestBlock) {
     if(error) {
         console.log('Error: ' + error);
-    } else if (blockHashOrNumber == null) {
+    } else if (latestBlock == null) {
         console.log('Warning: null block hash');
     } else {
-      console.log('Found new block: ' + blockHashOrNumber);
+      console.log('Found new block: ' + latestBlock);
       if(web3.isConnected()) {
-        web3.eth.getBlock(blockHashOrNumber, true, function(error,blockData) {
+        web3.eth.getBlock(latestBlock, true, function(error,blockData) {
           if(error) {
-            console.log('Warning: error on getting block with hash/number: ' +   blockHashOrNumber + ': ' + error);
+            console.log('Warning: error on getting block with hash/number: ' +   latestBlock + ': ' + error);
           }else if(blockData == null) {
-            console.log('Warning: null block data received from the block with hash/number: ' + blockHashOrNumber);
+            console.log('Warning: null block data received from the block with hash/number: ' + latestBlock);
           }else{
             writeBlockToDB(config, blockData);
             writeTransactionsToDB(config, blockData);
           }
         });
       }else{
-        console.log('Error: Web3 connection time out trying to get block ' + blockHashOrNumber + ' retrying connection now');
+        console.log('Error: Web3 connection time out trying to get block ' + latestBlock + ' retrying connection now');
         listenBlocks(config);
       }
     }
@@ -48,14 +48,14 @@ var listenBlocks = function(config) {
 /**
   If full sync is checked this function will start syncing the block chain from lastSynced param see README
 **/
-var syncChain = function(config,web3,blockHashOrNumber){
+var syncChain = function(config,web3,nextBlock){
   if(web3.isConnected()) {
-    web3.eth.getBlock(blockHashOrNumber, true, function(error, blockData) {
+    web3.eth.getBlock(nextBlock, true, function(error,nextBlock) {
       if(error) {
-        console.log('Warning: error on getting block with hash/number: ' +   blockHashOrNumber + ': ' + error);
+        console.log('Warning: error on getting block with hash/number: ' + nextBlock + ': ' + error);
         getOldestBlockDB();
       }else if(blockData == null) {
-        console.log('Warning: null block data received from the block with hash/number: ' + blockHashOrNumber);
+        console.log('Warning: null block data received from the block with hash/number: ' + nextBlock);
         getOldestBlockDB();
       }else{
         writeBlockToDB(config, blockData);
@@ -64,8 +64,8 @@ var syncChain = function(config,web3,blockHashOrNumber){
       }
     });
   }else{
-    console.log('Error: Web3 connection time out trying to get block ' + blockHashOrNumber + ' retrying connection now');
-    syncChain(config, web3, blockHashOrNumber);
+    console.log('Error: Web3 connection time out trying to get block ' + nextBlock + ' retrying connection now');
+    syncChain(config,web3,nextBlock);
   }
 }
 /**
