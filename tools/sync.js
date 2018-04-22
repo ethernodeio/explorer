@@ -113,11 +113,7 @@ var writeTransactionsToDB = function(config, blockData) {
           //process.exit(9);
         }
       }else{
-        if(!('quiet' in config && config.quiet === true)) {
-          console.log(blockData.transactions.length.toString() + ' transactions recorded for Block# ' + blockData.number.toString());
-        }else{
-          console.log('transactions recorded for Block# ' + blockData.number.toString());
-        }
+        console.log(blockData.transactions.length.toString() + ' transactions recorded for Block# ' + blockData.number.toString());
       }
     });
   }
