@@ -149,7 +149,7 @@ var getOldestBlockDB = function(config) {
 }
 /**
   //Block Patcher
-**/
+
 var runPatcher = function(config) {
   var latestBlockFind = Block.find({}, "number").lean(true).sort('-number').limit(1);
   latestBlockFind.exec(function (err, docs) {
@@ -157,16 +157,19 @@ var runPatcher = function(config) {
     var lastSyncBlock = docs[0].number;
     if(lastSyncBlock < lastestBlock){
       blocksBehind = lastestBlock - lastSyncBlock;
-      console.log('The data base is currently ' + blocksBehind +' blocks behind');
+      console.log('The database is currently ' + blocksBehind +' blocks behind');
       while(lastSyncBlock < lastestBlock){
         patchBlock = lastSyncBlock + 1;
         //syncChain(config,web3,patchBlock);
       }
     }else{
+      console.log('All Caught up');
       config.patch = false;
+      return;
     }
   });
 }
+**/
 /**
   Start config for node connection and sync
 **/
