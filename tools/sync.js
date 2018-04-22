@@ -74,10 +74,18 @@ var syncChain = function(config,web3,nextBlock){
 var writeBlockToDB = function(config, blockData) {
   return new Block(blockData).save( function( err, block, count ){
     if ( typeof err !== 'undefined' && err ) {
-      console.log('Error: Aborted due to error on ' + 'block number ' + blockData.number.toString() + ': ' + err);
-      process.exit(9);
+      if (err.code == 11000) {
+        if(!('quiet' in config && config.quiet === true)) {
+          console.log('Skip: Duplicate key ' + blockData.number.toString() + ': ' +err);
+        }
+      }else{
+        console.log('Error: Aborted due to error on ' + 'block number ' + blockData.number.toString() + ': ' + err);
+        process.exit(9);
+      }
     }else{
-      console.log('DB successfully written for block number ' + blockData.number.toString() );
+      if(!('quiet' in config && config.quiet === true)) {
+        console.log('DB successfully written for block number ' + blockData.number.toString() );
+      }
     }
   });
 }
