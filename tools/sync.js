@@ -122,12 +122,12 @@ var checkBlockDBExistsThenWrite = function(config, blockData) {
           writeTransactionsToDB(config, blockData);
       }else if(!('quiet' in config && config.quiet === true)) {
           console.log('Block number: ' + blockData.number.toString() + ' already exists in DB.');
-          listenBlocks(config);
+
       }
   });
 };
 var getOldestBlockDB = function() {
-  var blockFind = Block.find({}, "number").lean(true).sort('number').limit(1);
+  var blockFind = Block.find({}, "number").lean(true).sort('number').limit(2);
   blockFind.exec(function (err, docs) {
     if(docs.length < 1){
       console.log('nothing here');
