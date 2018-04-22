@@ -1,6 +1,6 @@
 /*
 Name: Ethereum Blockchain syncer
-Version: .0.0.1
+Version: .0.0.2
 This file will start syncing the blockchain from the node address you provide in the conf.json file.
 Please read the README in the root directory that explains the parameters of this code
 */
@@ -44,6 +44,9 @@ var listenBlocks = function(config) {
       }
     }
   });
+  if(config.patch == true){
+    runPatcher(config,blockData.number);
+  }
 }
 /**
   If full sync is checked this function will start syncing the block chain from lastSynced param see README
@@ -133,8 +136,8 @@ var checkBlockDBExistsThenWrite = function(config, blockData) {
   //Check oldest block in db and start sync from tehre
 **/
 var getOldestBlockDB = function() {
-  var blockFind = Block.find({}, "number").lean(true).sort('number').limit(1);
-  blockFind.exec(function (err, docs) {
+  var oldBlockFind = Block.find({}, "number").lean(true).sort('number').limit(1);
+  oldBlockFind.exec(function (err, docs) {
     if(docs.length < 1){
       console.log('nothing here starting from latest');
     }else{
@@ -144,6 +147,24 @@ var getOldestBlockDB = function() {
       }else{
         syncChain(config,web3,nextBlock);
       }
+    }
+  });
+}
+/**
+  //Block Patcher
+**/
+var runPatcher = function(config,lastBlock) {
+  var latestBlockFind = Block.find({}, "number").lean(true).sort('-number').limit(1);
+  blockFind.exec(function (err, docs) {
+    var lastSyncBlock = docs[0].number;
+    if(lastSyncBlock < lastBlock){
+      blocksBehind = lastBlock - lastSyncBlock;
+      console.log('The data base is currently ' + blocksBehind +' blocks behind');
+      while(lastSyncBlock < lastBlock){
+        patchBlock = lastSyncBlock + 1;
+        syncChain(config,web3,patchBlock);
+    }else{
+      config.patch = false;
     }
   });
 }
