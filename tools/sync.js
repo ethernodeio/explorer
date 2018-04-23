@@ -207,7 +207,6 @@ catch (error) {
       process.exit(1);
   }
 }
-}
 // Sets address for RPC WEB3 to connect to, usually your node IP address defaults ot localhost
 var web3 = new Web3(new Web3.providers.HttpProvider('http://' + config.nodeAddr + ':' + config.gethPort.toString()));
 // Starts full sync when set to true in config
@@ -219,6 +218,6 @@ if (config.syncAll === true){
 if (config.patch === true){
   console.log('Checking for missing blocks');
   runPatcher(config);
-
+}
 // Start listening for latest blocks
 listenBlocks(config);
