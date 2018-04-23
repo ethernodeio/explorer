@@ -5,5 +5,6 @@
     "endBlock":     "latest",
     "quiet":        true,
     "syncAll":      true,
-    "patch":        true
+    "patch":        true,
+    "patchBlocks":  0
 }

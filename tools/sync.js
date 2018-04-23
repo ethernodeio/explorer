@@ -83,11 +83,11 @@ var writeBlockToDB = function(config, blockData) {
       }
     }else{
       console.log('DB successfully written for block number ' + blockData.number.toString() );
-      // Starts full sync when set to true in config
+      // continues sync if flag is still true
       if (config.syncAll === true){
         getOldestBlockDB(config);
       }
-      // Starts full sync when set to true in config
+      // continues runnig patcher if still true
       if (config.patch === true){
         runPatcher(config);
       }
@@ -119,11 +119,11 @@ var writeTransactionsToDB = function(config, blockData) {
         }
       }else{
         console.log(blockData.transactions.length.toString() + ' transactions recorded for Block# ' + blockData.number.toString());
-        // Starts full sync when set to true in config
+        // continues sync if flag is still true
         if (config.syncAll === true){
           getOldestBlockDB(config);
         }
-        // Starts full sync when set to true in config
+        // continues runnig patcher if still true
         if (config.patch === true){
           runPatcher(config);
         }
@@ -168,32 +168,13 @@ var getOldestBlockDB = function() {
   //Block Patcher
 **/
 var runPatcher = function(config) {
-  var latestBlockFind = Block.find({}, "number").lean(true).sort('-number').limit(1);
-  latestBlockFind.exec(function (err, docs) {
-  var lastestBlock = web3.eth.blockNumber;
-  var lastSyncBlock = docs[0].number;
-  if(lastSyncBlock < lastestBlock){
-    blocksBehind = lastestBlock - lastSyncBlock;
-    console.log('The database is currently ' + blocksBehind +' blocks behind');
-      patchBlock = lastSyncBlock + 1;
-      web3.eth.getBlock(patchBlock, true, function(error,patchData) {
-        if(error) {
-          console.log('Warning: error on getting block with hash/number: ' + patchBlock + ': ' + error);
-          runPatcher();
-        }else if(patchData == null) {
-          console.log('Warning: null block data received from the block with hash/number: ' + patchBlock);
-          runPatcher();
-        }else{
-          writeBlockToDB(config, patchData);
-          writeTransactionsToDB(config, patchData);
-        }
-      });
-    }else{
-      console.log('All Caught up');
-      config.patch = false;
-      return;
-    }
-  });
+  currentBlock = web3.eth.blockNumber;
+  patchFrom = currentBlock - config.patchBlocks;
+  console.log('Starting patching from block: '+patchFrom);
+  while(config.patchBlocks > 0){
+    console.log(config.patchBlocks);
+    config.patchBlocks - 1;
+  }
 }
 /**
   Start config for node connection and sync
@@ -226,6 +207,9 @@ catch (error) {
       process.exit(1);
   }
 }
+}
+// Sets address for RPC WEB3 to connect to, usually your node IP address defaults ot localhost
+var web3 = new Web3(new Web3.providers.HttpProvider('http://' + config.nodeAddr + ':' + config.gethPort.toString()));
 // Starts full sync when set to true in config
 if (config.syncAll === true){
   console.log('Starting Full Sync');
@@ -235,8 +219,6 @@ if (config.syncAll === true){
 if (config.patch === true){
   console.log('Checking for missing blocks');
   runPatcher(config);
-}
-// Sets address for RPC WEb3 to connect to, usually your node address defaults ot localhost
-var web3 = new Web3(new Web3.providers.HttpProvider('http://' + config.nodeAddr + ':' + config.gethPort.toString()));
+
 // Start listening for latest blocks
 listenBlocks(config);
