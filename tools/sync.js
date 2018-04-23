@@ -44,6 +44,16 @@ var listenBlocks = function(config) {
       }
     }
   });
+  // Starts full sync when set to true in config
+  if (config.syncAll === true){
+    console.log('Starting Full Sync');
+    getOldestBlockDB(config);
+  }
+  // Starts full sync when set to true in config
+  if (config.patch === true){
+    console.log('Checking for missing blocks');
+    runPatcher(config);
+  }
 }
 /**
   If full sync is checked this function will start syncing the block chain from lastSynced param see README
@@ -87,10 +97,6 @@ var writeBlockToDB = function(config, blockData) {
       if (config.syncAll === true){
         getOldestBlockDB(config);
       }
-      // continues runnig patcher if still true
-      if (config.patch === true){
-        runPatcher(config);
-      }
     }
   });
 }
@@ -122,10 +128,6 @@ var writeTransactionsToDB = function(config, blockData) {
         // continues sync if flag is still true
         if (config.syncAll === true){
           getOldestBlockDB(config);
-        }
-        // continues runnig patcher if still true
-        if (config.patch === true){
-          runPatcher(config);
         }
       }
     });
@@ -174,6 +176,9 @@ var runPatcher = function(config) {
   while(config.patchBlocks > 0){
     syncChain(config,web3,patchBlock);
     config.patchBlocks--;
+    if (config.patchBlocks == 0){
+      config.patch = false;
+    }
   }
 }
 /**
@@ -209,15 +214,5 @@ catch (error) {
 }
 // Sets address for RPC WEB3 to connect to, usually your node IP address defaults ot localhost
 var web3 = new Web3(new Web3.providers.HttpProvider('http://' + config.nodeAddr + ':' + config.gethPort.toString()));
-// Starts full sync when set to true in config
-if (config.syncAll === true){
-  console.log('Starting Full Sync');
-  getOldestBlockDB(config);
-}
-// Starts full sync when set to true in config
-if (config.patch === true){
-  console.log('Checking for missing blocks');
-  runPatcher(config);
-}
 // Start listening for latest blocks
 listenBlocks(config);
