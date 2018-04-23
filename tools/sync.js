@@ -163,7 +163,9 @@ var runPatcher = function(config) {
   while(config.patchBlocks > 0){
     config.patchBlocks--;
     patchBlock++;
-    console.log('Patching Block: '+patchBlock)
+    if(!('quiet' in config && config.quiet === true)) {
+      console.log('Patching Block: '+patchBlock)
+    }
     web3.eth.getBlock(patchBlock, true, function(error,patchData) {
       if(error) {
         console.log('Warning: error on getting block with hash/number: ' + patchBlock + ': ' + error);
