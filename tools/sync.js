@@ -155,6 +155,8 @@ var getOldestBlockDB = function() {
     }else{
       var nextBlock = (docs[0].number - 1);
       if(nextBlock == config.startBlock){
+        console.log('Sync Finsihed');
+        config.syncAll = false;
         return;
       }else{
         syncChain(config,web3,nextBlock);
@@ -226,10 +228,12 @@ catch (error) {
 }
 // Starts full sync when set to true in config
 if (config.syncAll === true){
+  console.log('Starting Full Sync');
   getOldestBlockDB(config);
 }
 // Starts full sync when set to true in config
 if (config.patch === true){
+  console.log('Checking for missing blocks');
   runPatcher(config);
 }
 // Sets address for RPC WEb3 to connect to, usually your node address defaults ot localhost
