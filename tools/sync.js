@@ -169,11 +169,12 @@ var getOldestBlockDB = function() {
 **/
 var runPatcher = function(config) {
   currentBlock = web3.eth.blockNumber;
-  patchFrom = currentBlock - config.patchBlocks;
-  console.log('Starting patching from block: '+patchFrom);
+  patchBlock = currentBlock - config.patchBlocks;
+  console.log('Starting patching from block: '+patchBlock);
   while(config.patchBlocks > 0){
-    console.log(config.patchBlocks);
-    config.patchBlocks - 1;
+    console.log(patchBlock++);
+    config.patchBlocks--;
+    syncChain(config,web3,patchBlock);
   }
 }
 /**
