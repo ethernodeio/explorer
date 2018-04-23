@@ -175,6 +175,7 @@ var runPatcher = function(config) {
   console.log('Starting patching from block: '+patchBlock);
   while(config.patchBlocks > 0){
     syncChain(config,web3,patchBlock);
+    console.log('Patching Block: '+patchBlock)
     config.patchBlocks--;
     if (config.patchBlocks == 0){
       config.patch = false;
