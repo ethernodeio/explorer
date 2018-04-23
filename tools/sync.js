@@ -172,9 +172,8 @@ var runPatcher = function(config) {
   patchBlock = currentBlock - config.patchBlocks;
   console.log('Starting patching from block: '+patchBlock);
   while(config.patchBlocks > 0){
-    console.log(patchBlock++);
-    config.patchBlocks--;
     syncChain(config,web3,patchBlock);
+    config.patchBlocks--;
   }
 }
 /**
