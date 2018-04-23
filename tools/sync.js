@@ -154,7 +154,7 @@ var getOldestBlockDB = function() {
   });
 }
 /**
-  Block Patcher
+  Block Patcher(experimental)
 **/
 var runPatcher = function(config) {
   currentBlock = web3.eth.blockNumber;
@@ -182,7 +182,7 @@ var runPatcher = function(config) {
   }
 }
 /**
-  This will be used for the patcher(disabled atm)
+  This will be used for the patcher(experimental)
 **/
 var checkBlockDBExistsThenWrite = function(config,patchData) {
   Block.find({number: patchData.number}, function (err, b) {
