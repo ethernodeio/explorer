@@ -134,19 +134,6 @@ var writeTransactionsToDB = function(config, blockData) {
   }
 }
 /**
-  //This will be used for the patcher(disabled atm)
-**/
-var checkBlockDBExistsThenWrite = function(config, blockData) {
-  Block.find({number: blockData.number}, function (err, b) {
-    if (!b.length){
-      writeBlockToDB(config, blockData);
-      writeTransactionsToDB(config, blockData);
-    }else if(!('quiet' in config && config.quiet === true)) {
-      console.log('Block number: ' + blockData.number.toString() + ' already exists in DB.');
-    }
-  });
-};
-/**
   //Check oldest block in db and start sync from tehre
 **/
 var getOldestBlockDB = function() {
@@ -167,7 +154,7 @@ var getOldestBlockDB = function() {
   });
 }
 /**
-  //Block Patcher
+  Block Patcher
 **/
 var runPatcher = function(config) {
   currentBlock = web3.eth.blockNumber;
@@ -177,13 +164,36 @@ var runPatcher = function(config) {
     config.patchBlocks--;
     patchBlock++;
     console.log('Patching Block: '+patchBlock)
-    syncChain(config,web3,patchBlock);
+    web3.eth.getBlock(patchBlock, true, function(error,patchData) {
+      if(error) {
+        console.log('Warning: error on getting block with hash/number: ' + patchBlock + ': ' + error);
+        //getOldestBlockDB();
+      }else if(patchData == null) {
+        console.log('Warning: null block data received from the block with hash/number: ' + patchBlock);
+        //getOldestBlockDB();
+      }else{
+        checkBlockDBExistsThenWrite(config,patchData)
+      }
+    });
     if (config.patchBlocks == 0){
       config.patch = false;
       console.log('Block Patching Complete')
     }
   }
 }
+/**
+  This will be used for the patcher(disabled atm)
+**/
+var checkBlockDBExistsThenWrite = function(config,patchData) {
+  Block.find({number: patchData.number}, function (err, b) {
+    if (!b.length){
+      writeBlockToDB(config,patchData);
+      writeTransactionsToDB(config,patchData);
+    }else if(!('quiet' in config && config.quiet === true)) {
+      console.log('Block number: ' +patchData.number.toString() + ' already exists in DB.');
+    }
+  });
+};
 /**
   Start config for node connection and sync
 **/
