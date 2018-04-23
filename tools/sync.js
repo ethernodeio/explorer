@@ -178,6 +178,7 @@ var runPatcher = function(config) {
     config.patchBlocks--;
     if (config.patchBlocks == 0){
       config.patch = false;
+      console.log('Block Patching Complete')
     }
   }
 }
